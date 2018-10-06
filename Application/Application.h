@@ -104,6 +104,8 @@ class Application : public AppTask
     // Pi
     static constexpr double PI = 3.1415926535897932384626433832795F;
 
+    static const uint32_t DAC_MAX_VAL = 0x00000FFFU;
+
     // Display driver instance
     DisplayDrv& display_drv = DisplayDrv::GetInstance();
     // Input driver instance

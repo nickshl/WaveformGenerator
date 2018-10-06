@@ -310,7 +310,8 @@ Result Application::GenerateWave(uint16_t* dac_data, uint32_t dac_data_cnt, uint
 {
   Result result;
 
-  uint32_t max_val = (0xFFFU * duty) / 100U;
+  uint32_t max_val = (DAC_MAX_VAL * duty) / 100U;
+  uint32_t shift = (DAC_MAX_VAL - max_val) / 2U;
 
   switch(waveform)
   {
@@ -318,6 +319,7 @@ Result Application::GenerateWave(uint16_t* dac_data, uint32_t dac_data_cnt, uint
       for(uint32_t i = 0U; i < dac_data_cnt; i++)
       {
         dac_data[i] = (uint16_t)((sin((2.0F * i * PI) / (dac_data_cnt + 1)) + 1.0F) * max_val) >> 1U;
+        dac_data[i] += shift;
       }
       break;
 
@@ -332,6 +334,7 @@ Result Application::GenerateWave(uint16_t* dac_data, uint32_t dac_data_cnt, uint
         {
           dac_data[i] = (max_val * (dac_data_cnt - i)) / (dac_data_cnt / 2U);
         }
+        dac_data[i] += shift;
       }
       break;
 
@@ -339,6 +342,7 @@ Result Application::GenerateWave(uint16_t* dac_data, uint32_t dac_data_cnt, uint
       for(uint32_t i = 0U; i < dac_data_cnt; i++)
       {
         dac_data[i] = (max_val * i) / (dac_data_cnt - 1U);
+        dac_data[i] += shift;
       }
       break;
 
@@ -346,6 +350,7 @@ Result Application::GenerateWave(uint16_t* dac_data, uint32_t dac_data_cnt, uint
       for(uint32_t i = 0U; i < dac_data_cnt; i++)
       {
         dac_data[i] = (i < dac_data_cnt / 2U) ? max_val : 0x000;
+        dac_data[i] += shift;
       }
       break;
 
