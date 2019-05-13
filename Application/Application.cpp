@@ -62,8 +62,8 @@ Result Application::Loop()
     int32_t start_pos_y = half_scr_h * (i/2);
     ch_dsc[i].box.SetParams(nullptr, start_pos_x, start_pos_y, half_scr_w, half_scr_h, true);
     ch_dsc[i].box.SetCallback(&Callback, this, nullptr, i);
-    ch_dsc[i].freq_str.SetParams(ch_dsc[i].freq_str_data, start_pos_x + 4, start_pos_y + 64, COLOR_LIGHTGREY, String::FONT_8x12);
-    ch_dsc[i].duty_str.SetParams(ch_dsc[i].duty_str_data, start_pos_x + 4, start_pos_y + 64 + 12, COLOR_LIGHTGREY, String::FONT_8x12);
+    ch_dsc[i].freq_str.SetParams(ch_dsc[i].freq_str_data, start_pos_x + 4, start_pos_y + 64, COLOR_LIGHTGREY, Font_8x12::GetInstance());
+    ch_dsc[i].duty_str.SetParams(ch_dsc[i].duty_str_data, start_pos_x + 4, start_pos_y + 64 + 12, COLOR_LIGHTGREY, Font_8x12::GetInstance());
     ch_dsc[i].img.SetImage(waveforms[ch_dsc[i].waveform]);
     ch_dsc[i].img.Move(start_pos_x + 4, start_pos_y + 4);
     ch_dsc[i].box.Show(1);
