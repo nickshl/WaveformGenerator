@@ -1071,7 +1071,7 @@ const uint8_t waveforms_3_data[] = {
 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B, 0x5B};
 
 const ImageDesc waveforms[] = {
-{76, 56, 8, {.img8 = waveforms_0_data}, PALETTE_884, -1},
-{76, 56, 8, {.img8 = waveforms_1_data}, PALETTE_884, -1},
-{76, 56, 8, {.img8 = waveforms_2_data}, PALETTE_884, -1},
-{76, 56, 8, {.img8 = waveforms_3_data}, PALETTE_884, -1}};
+{76, 56, 8, {.img = waveforms_0_data}, PALETTE_884, -1},
+{76, 56, 8, {.img = waveforms_1_data}, PALETTE_884, -1},
+{76, 56, 8, {.img = waveforms_2_data}, PALETTE_884, -1},
+{76, 56, 8, {.img = waveforms_3_data}, PALETTE_884, -1}};

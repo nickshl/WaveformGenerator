@@ -61,7 +61,7 @@ Result Application::Loop()
     int32_t start_pos_x = half_scr_w * (i%2);
     int32_t start_pos_y = half_scr_h * (i/2);
     ch_dsc[i].box.SetParams(nullptr, start_pos_x, start_pos_y, half_scr_w, half_scr_h, true);
-    ch_dsc[i].box.SetCallback(&Callback, this, nullptr, i);
+    ch_dsc[i].box.SetCallback(AppTask::GetCurrent(), reinterpret_cast<CallbackPtr>(&Callback), this);
     ch_dsc[i].freq_str.SetParams(ch_dsc[i].freq_str_data, start_pos_x + 4, start_pos_y + 64, COLOR_LIGHTGREY, Font_8x12::GetInstance());
     ch_dsc[i].duty_str.SetParams(ch_dsc[i].duty_str_data, start_pos_x + 4, start_pos_y + 64 + 12, COLOR_LIGHTGREY, Font_8x12::GetInstance());
     ch_dsc[i].img.SetImage(waveforms[ch_dsc[i].waveform]);
@@ -138,9 +138,9 @@ Result Application::Loop()
       for(uint32_t i = 0U; i < CHANNEL_CNT; i++)
       {
         ch_dsc[i].img.SetImage(waveforms[ch_dsc[i].waveform]);
-        snprintf(ch_dsc[i].freq_str_data, NumberOf(ch_dsc[i].freq_str_data), "Freq: %7lu Hz", ch_dsc[i].frequency);
-        if(IsAnalogChannel(i)) snprintf(ch_dsc[i].duty_str_data, NumberOf(ch_dsc[i].duty_str_data), "Ampl: %7d %%", ch_dsc[i].duty);
-        else                   snprintf(ch_dsc[i].duty_str_data, NumberOf(ch_dsc[i].duty_str_data), "Duty: %7d %%", ch_dsc[i].duty);
+        ch_dsc[i].freq_str.SetString(ch_dsc[i].freq_str_data, NumberOf(ch_dsc[i].freq_str_data), "Freq: %7lu Hz", ch_dsc[i].frequency);
+        if(IsAnalogChannel(i)) ch_dsc[i].duty_str.SetString(ch_dsc[i].duty_str_data, NumberOf(ch_dsc[i].duty_str_data), "Ampl: %7d %%", ch_dsc[i].duty);
+        else                   ch_dsc[i].duty_str.SetString(ch_dsc[i].duty_str_data, NumberOf(ch_dsc[i].duty_str_data), "Duty: %7d %%", ch_dsc[i].duty);
         // Set gray color to all channels
         ch_dsc[i].freq_str.SetColor(COLOR_LIGHTGREY);
         ch_dsc[i].duty_str.SetColor(COLOR_LIGHTGREY);
@@ -200,29 +200,48 @@ Result Application::Loop()
 // *****************************************************************************
 // ***  Callback for the buttons   *********************************************
 // *****************************************************************************
-void Application::Callback(void* ptr, void* param_ptr, uint32_t param)
+Result Application::Callback(Application* app, void* ptr)
 {
-  Application& app = *((Application*)ptr);
-  ChannelType channel = app.channel;
-  if(channel == param)
+  ChannelType channel = CHANNEL_CNT;
+
+  // Find which channel is touched
+  for(uint32_t i = 0u; i < NumberOf(app->ch_dsc); i++)
   {
-    // Second click - change wave type
-    if(IsAnalogChannel(channel))
+    if(ptr == &app->ch_dsc[i].box)
     {
-      app.ch_dsc[channel].waveform = (WaveformType)(app.ch_dsc[channel].waveform + 1U);
-      if(app.ch_dsc[channel].waveform >= WAVEFORM_CNT) app.ch_dsc[channel].waveform = WAVEFORM_SINE;
-    }
-    else
-    {
-      app.ch_dsc[channel].waveform = WAVEFORM_SQUARE;
+      channel = (ChannelType)i;
+      break;
     }
   }
-  else
+
+  // If we found the channel(always should be)
+  if(channel < CHANNEL_CNT)
   {
-    app.channel = (ChannelType)param;
+    // If selected channel is touched
+    if(channel == app->channel)
+    {
+      // Second click - change wave type
+      if(app->IsAnalogChannel(app->channel))
+      {
+        app->ch_dsc[channel].waveform = (WaveformType)(app->ch_dsc[channel].waveform + 1U);
+        if(app->ch_dsc[channel].waveform >= WAVEFORM_CNT) app->ch_dsc[channel].waveform = WAVEFORM_SINE;
+      }
+      else
+      {
+        app->ch_dsc[channel].waveform = WAVEFORM_SQUARE;
+      }
+    }
+    else // Select another one
+    {
+      app->channel = channel;
+    }
+    app->update = true;
   }
-  app.update = true;
+
+  // Always run
+  return Result::RESULT_OK;
 }
+
 
 // *****************************************************************************
 // ***   ProcessFrequencyChange   **********************************************
